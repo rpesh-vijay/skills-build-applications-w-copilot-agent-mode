@@ -1,0 +1,49 @@
+import React, { useEffect, useState } from 'react';
+
+const Activities = () => {
+  const codespace = process.env.REACT_APP_CODESPACE_NAME || 'localhost';
+  const endpoint = `https://${codespace}-8000.app.github.dev/api/activities/`;
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    console.log('Fetching from:', endpoint);
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(json => {
+        const results = json.results || json;
+        setData(results);
+        console.log('Fetched activities:', results);
+      })
+      .catch(err => console.error('Error fetching activities:', err));
+  }, [endpoint]);
+
+  return (
+    <div className="card mb-4">
+      <div className="card-body">
+        <h2 className="card-title text-primary mb-4">Activities</h2>
+        <div className="table-responsive">
+          <table className="table table-striped table-bordered">
+            <thead className="table-light">
+              <tr>
+                {data[0] && Object.keys(data[0]).map((key) => (
+                  <th key={key}>{key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, idx) => (
+                <tr key={item.id || idx}>
+                  {Object.values(item).map((val, i) => (
+                    <td key={i}>{JSON.stringify(val)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Activities;
